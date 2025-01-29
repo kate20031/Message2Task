@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+<script>
+    function fetchMessages() {
+        fetch("/get_messages")
+            .then(response => response.json())
+            .then(data => {
+                const messagesDiv = document.getElementById("messages");
+                messagesDiv.innerHTML = "";
+
+                if (data.error) {
+                    messagesDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                data.messages.forEach(msg => {
+                    const messageElement = document.createElement("div");
+                    messageElement.innerHTML = `<strong>${msg.from}:</strong> ${msg.body} <em>(${msg.date})</em>`;
+                    messagesDiv.appendChild(messageElement);
+                });
+            })
+    }
+
+    setInterval(fetchMessages, 5000);
+    window.onload = fetchMessages;
+</script>
+
+</head>
+<body>
+    <h1>Hello, {{ username }}!</h1>
+    <h2>Your messages:</h2>
+    <div id="messages">
+        <p>Loading messages...</p>
+    </div>
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
