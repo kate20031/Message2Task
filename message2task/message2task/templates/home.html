@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Welcome to Task Manager</h1>
+        <h2>Create tasks directly from messages!</h2>
+        <p>Manage your tasks effortlessly by registering or logging in below.</p>
+
+        <!-- Buttons Container -->
+        <div class="buttons-container">
+            <a href="{{ url_for('register') }}">
+                <button>Register</button>
+            </a>
+            <a href="{{ url_for('login') }}">
+                <button>Login</button>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Task Manager App | All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

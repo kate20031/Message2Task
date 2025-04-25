@@ -4,39 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-<script>
-    function fetchMessages() {
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        let deletedMessages = new Set(JSON.parse(localStorage.getItem("deletedMessages")) || []);
+
+function fetchMessages() {
         fetch("/get_messages")
             .then(response => response.json())
             .then(data => {
                 const messagesDiv = document.getElementById("messages");
                 messagesDiv.innerHTML = "";
 
-                if (data.error) {
-                    messagesDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+                if (!data.messages || data.error) {
+                    messagesDiv.innerHTML = `<p class="error-message">Error: ${data.error || "No messages found."}</p>`;
                     return;
                 }
 
                 data.messages.forEach(msg => {
+                    if (deletedMessages.has(msg.sid)) {
+                        return;  // Skip deleted messages
+                    }
+
                     const messageElement = document.createElement("div");
-                    messageElement.innerHTML = `<strong>${msg.from}:</strong> ${msg.body} <em>(${msg.date})</em>`;
+                    messageElement.className = "message";
+
+                    let aiContent = msg.ai_task && Object.keys(msg.ai_task).length > 0
+                        ? "<ul>" + Object.entries(msg.ai_task).map(([key, value]) =>
+                            `<li><strong>${key}:</strong> ${value || 'Not specified'}</li>`).join('') + "</ul>"
+                        : "<p>No task data available.</p>";
+
+                    messageElement.innerHTML = `<strong>${msg.from_}:</strong> ${aiContent} <em>(${msg.date})</em>`;
+
+                    // Confirm button
+                    const confirmButton = document.createElement("button");
+                    confirmButton.textContent = "Confirm";
+                    confirmButton.onclick = function() {
+                        alert("Task confirmed!");
+                    };
+
+                    // Delete button
+                    const deleteButton = document.createElement("button");
+                    deleteButton.className = "delete-button";
+                    deleteButton.textContent = "Delete";
+                    deleteButton.onclick = function() {
+                        const messageSid = msg.sid;
+                        if (messageSid) {
+                            fetch(`/delete_message/${messageSid}`, { method: 'DELETE' })
+                                .then(response => {
+                                    if (response.ok) {
+                                        deletedMessages.add(messageSid);
+                                        localStorage.setItem("deletedMessages", JSON.stringify([...deletedMessages]));
+                                        messageElement.remove();
+                                    } else {
+                                        return response.json();
+                                    }
+                                })
+                                .then(errorData => {
+                                    if (errorData && errorData.error) {
+                                        console.error('Error deleting message:', errorData.error);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error deleting message:', error);
+                                });
+                        }
+                    };
+
+                    messageElement.appendChild(confirmButton);
+                    messageElement.appendChild(deleteButton);
                     messagesDiv.appendChild(messageElement);
                 });
             })
+            .catch(error => console.error('Error fetching messages:', error));
     }
 
-    setInterval(fetchMessages, 5000);
+    setInterval(fetchMessages, 20000);  // Refresh every 20 seconds
     window.onload = fetchMessages;
-</script>
 
+    </script>
 </head>
 <body>
-    <h1>Hello, {{ username }}!</h1>
-    <h2>Your messages:</h2>
-    <div id="messages">
-        <p>Loading messages...</p>
+    <div class="container">
+        <header>
+            <h1>Hello, {{ username }}!</h1>
+            <h2>Your messages:</h2>
+        </header>
+
+        <div id="messages">
+            <p>Loading messages...</p>
+        </div>
+
+        <footer>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </footer>
     </div>
-    <br>
-    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
