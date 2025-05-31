@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmed events</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .message {
+            border: 1px solid #ccc;
+            padding: 12px;
+            margin: 10px;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Confirmed events</h1>
+        <a href="{{ url_for('dashboard') }}" class="logout-button">← Back</a>
+    </header>
+    <div id="confirmed-messages">
+        <p>Processing...</p>
+    </div>
+</div>
+
+<script>
+function parseDateAndTime(msg) {
+    const rawDate = msg.Date || (msg.ai_task && msg.ai_task.Date);
+    const rawTime = msg.Time || (msg.ai_task && msg.ai_task.Time);
+
+    if (!rawDate || !rawTime) {
+        console.warn("Time or Data are empty:", rawDate, rawTime);
+        return null;
+    }
+
+    const [day, month, year] = rawDate.split('.');
+    const fullYear = 2000 + parseInt(year, 10); // '25' → 2025
+
+    const [hours, minutes] = rawTime.split(':');
+
+    // Створюємо локальний час (без UTC)
+    const dateObj = new Date(fullYear, parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
+
+    if (isNaN(dateObj.getTime())) {
+        console.warn("Wrong Data:", dateObj);
+        return null;
+    }
+
+    return dateObj;
+}
+
+
+function formatForCalendar(dateObj) {
+    return dateObj.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("confirmed-messages");
+    let messages = JSON.parse(localStorage.getItem("confirmedMessages") || "[]");
+
+    if (!messages.length) {
+        container.innerHTML = "<p>There are no confirmed tasks.</p>";
+        return;
+    }
+
+    container.innerHTML = "";
+    messages.forEach(msg => {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "message";
+        msgDiv.setAttribute("data-sid", msg.sid);
+
+        const taskDetails = Object.entries(msg.ai_task || {}).map(([k, v]) =>
+            `<li><strong>${k}:</strong> ${v}</li>`).join('');
+
+        msgDiv.innerHTML = `
+            <strong>${msg.from_}</strong>
+            <div><ul>${taskDetails}</ul></div>
+            <em>${msg.date}</em>
+            <button class="delete-btn">Delete</button>
+            <button class="add-calendar-btn">Add to Google Calendar</button>
+        `;
+
+        container.appendChild(msgDiv);
+    });
+
+    container.addEventListener("click", (e) => {
+        const msgDiv = e.target.closest(".message");
+        const sid = msgDiv.getAttribute("data-sid");
+        const index = messages.findIndex(m => m.sid === sid);
+        const msg = messages[index];
+
+        if (e.target.classList.contains("delete-btn")) {
+            fetch(`/delete_message/${sid}`, { method: "DELETE" })
+                .then(response => {
+                    if (response.ok) {
+                        messages.splice(index, 1);
+                        localStorage.setItem("confirmedMessages", JSON.stringify(messages));
+                        msgDiv.remove();
+
+                        if (messages.length === 0) {
+                            container.innerHTML = "<p>There are no confirmed events.</p>";
+                        }
+                    } else {
+                        return response.json().then(data => {
+                            alert(`Input error: ${data.error || 'Unknown error'}`);
+                        });
+                    }
+                })
+                .catch(err => {
+                    alert("Input error.");
+                    console.error(err);
+                });
+        }
+
+        if (e.target.classList.contains("add-calendar-btn")) {
+            const startDate = parseDateAndTime(msg);
+            if (!startDate) {
+                alert("Failed to process time/data.");
+                return;
+            }
+
+            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 година
+
+            const start = formatForCalendar(startDate);
+            const end = formatForCalendar(endDate);
+
+            const title = encodeURIComponent(msg.Title || (msg.ai_task?.Title) || "Event");
+            const location = encodeURIComponent(msg.Place || (msg.ai_task?.Place) || "");
+            const details = encodeURIComponent("Person: " + (msg.Person || msg.ai_task?.Person || ""));
+
+            const calendarUrl =
+                `https://www.google.com/calendar/render?action=TEMPLATE` +
+                `&text=${title}` +
+                `&dates=${start}/${end}` +
+                `&location=${location}` +
+                `&details=${details}`;
+
+            window.open(calendarUrl, '_blank');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
