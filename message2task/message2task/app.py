@@ -20,26 +20,12 @@ from .extractor_context import TaskExtractorContext
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://messageuser:1234@localhost/message2taskdb'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-# class Message(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     sid = db.Column(db.String(64), unique=True, nullable=False)
-#     from_user = db.Column(db.String(100), nullable=False)
-#     ai_task = db.Column(db.JSON, nullable=True)
-#     date = db.Column(db.String(100), nullable=False)
-#     processed = db.Column(db.Boolean, default=False)
-#     confirmed = db.Column(db.Boolean, default=False)
-#
-#     def __repr__(self):
-#         return f"<Message {self.from_user}>"
-
-# === Модель Message оновлена ===
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sid = db.Column(db.String(64), unique=True, nullable=False)
@@ -69,42 +55,13 @@ class User(db.Model):
 @app.before_request
 def before_first_request_func():
     if not hasattr(app, 'has_run'):
-        # Initialization code here
         app.has_run = True
-
-
-
-# users_db = {}
-
-
 
 
 # Initialize Twilio client
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-# db = SQLAlchemy(app)
-
-
-
-
-# @app.route("/register", methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#
-#         if User.query.filter_by(username=username).first():
-#             flash('Username already exists. Please choose a different one.', 'danger')
-#         else:
-#             hashed_pw = generate_password_hash(password)
-#             new_user = User(username=username, password_hash=hashed_pw)
-#             db.session.add(new_user)
-#             db.session.commit()
-#             flash('Registration successful! Please log in.', 'success')
-#             return redirect(url_for('login'))
-#
-#     return render_template('register.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -137,25 +94,6 @@ def register():
     return render_template('register.html')
 
 
-
-# @app.route("/login", methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#
-#         if username in users_db:
-#             if check_password_hash(users_db[username], password):
-#                 session['user'] = username  # Store the username in the session
-#                 flash('Login successful!', 'success')
-#                 return redirect(url_for('dashboard'))
-#             else:
-#                 flash('Invalid password. Please try again.', 'danger')
-#         else:
-#             flash('Username not found. Please try again.', 'danger')
-#
-#     return render_template('login.html')
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -173,27 +111,6 @@ def login():
 
     return render_template('login.html')
 
-
-# @app.route("/dashboard")
-# def dashboard():
-#     if 'user' not in session:
-#         flash('You need to log in first.', 'warning')
-#         return redirect(url_for('login'))
-#
-#     # Виводимо тільки збережені повідомлення
-#     messages = Message.query.order_by(Message.date.desc()).limit(10).all()
-#
-#     message_list = [{
-#         'from': msg.from_user,
-#         'ai_task': msg.ai_task,
-#         'date': msg.date
-#     } for msg in messages]
-#
-#     if 'tasks' not in session:
-#         session['tasks'] = generate_ai_tasks()
-#
-#     return render_template('dashboard.html', username=session['user'], messages=message_list, tasks=session['tasks'])
-#
 
 @app.route("/dashboard")
 def dashboard():
@@ -224,203 +141,14 @@ def home():
     return render_template('home.html')
 
 def generate_ai_tasks():
-    # Example function to simulate AI task generation
-    # This could be a function that interacts with the Gemini API
     tasks = [
         {"task": "Explain the concept of the sun", "status": "pending"},
         {"task": "Describe the sun's impact on Earth's climate", "status": "pending"}
     ]
     return tasks
-#
-# @app.route("/get_messages", methods=['GET'])
-# def get_messages():
-#     if 'user' in session:
-#         try:
-#             messages = client.messages.list(limit=10)
-#
-#             processed_messages = []
-#             for msg in messages:
-#                 from strategy_gemini import GeminiExtractionStrategy
-#                 from extractor_context import TaskExtractorContext
-#
-#                 context = TaskExtractorContext(GeminiExtractionStrategy())
-#                 ai_result = context.extract_task(msg.body)
-#
-#                 # ai_result = extract_task_from_message(msg.body)  # Process message with AI
-#
-#                 print(f"Raw AI result: {ai_result}")  # Log the raw AI result
-#
-#                 if ai_result:
-#                     try:
-#                         # If the AI result is a dictionary, directly use it
-#                         if isinstance(ai_result, dict):
-#                             ai_task = ai_result
-#                             processed_messages.append({
-#                                 'id': msg.sid,
-#                                 'from': msg.from_,
-#                                 'ai_task': ai_task,
-#                                 'date': msg.date_sent.strftime('%Y-%m-%d %H:%M:%S')
-#                             })
-#                             existing = Message.query.filter_by(sid=msg.sid).first()
-#                             if existing:
-#                                 print(f"Message with sid={msg.sid} already exists, skipping insert.")
-#                                 continue  # пропускаємо вставку
-#
-#                             try:
-#                                 # Save the message to the database
-#                                 message = Message(
-#                                     sid=msg.sid,
-#                                     from_user=msg.from_,
-#                                     ai_task=ai_task,  # Store AI task as JSON
-#                                     date=msg.date_sent.strftime('%Y-%m-%d %H:%M:%S')
-#                                 )
-#
-#                                 db.session.add(message)
-#                                 db.session.commit()
-#
-#                                 # Flash a success message
-#                                 flash(f"Message from {msg.from_} saved successfully!", 'success')
-#
-#                             except IntegrityError as e:
-#                                 db.session.rollback()
-#                                 print(f"Error saving message: {e}")
-#                                 flash("Error saving message to DB.", 'danger')
-#
-#                         else:
-#                             print("Unexpected structure in AI result.")
-#                     except Exception as e:
-#                         print(f"Unexpected error during AI task extraction: {e}")
-#                         # Flash an error message
-#                         flash(f"Error processing message: {e}", 'danger')
-#
-#             print(f"Processed messages: {processed_messages}")  # Log the processed messages
-#             return {"messages": processed_messages}, 200
-#
-#         except Exception as e:
-#             print(f"Error: {str(e)}")  # Log any other errors
-#             # Flash an error message if there was an issue fetching messages
-#             flash(f"Error fetching messages from Twilio: {str(e)}", 'danger')
-#             return {"error": str(e)}, 500
-#     else:
-#         return {"error": "Unauthorized"}, 401
-# @app.route("/get_messages", methods=['GET'])
-# def get_messages():
-#     if 'user_id' not in session:
-#         return jsonify({"error": "Unauthorized"}), 401
-#
-#     try:
-#         user_id = session['user_id']
-#         messages = client.messages.list(limit=10)
-#         processed_messages = []
-#
-#         from strategy_gemini import GeminiExtractionStrategy
-#         from extractor_context import TaskExtractorContext
-#
-#         context = TaskExtractorContext(GeminiExtractionStrategy())
-#
-#         for msg in messages:
-#             existing = Message.query.filter_by(sid=msg.sid).first()
-#             if existing:
-#                 print(f"Message with sid={msg.sid} already exists, skipping insert.")
-#                 continue
-#
-#             ai_result = context.extract_task(msg.body)
-#
-#             if isinstance(ai_result, dict):
-#                 # Нормалізація часу
-#                 if 'Time' in ai_result:
-#                     normalized = normalize_time(ai_result['Time'])
-#                     ai_result['Time'] = normalized if normalized else None
-#
-#                 try:
-#                     message = Message(
-#                         sid=msg.sid,
-#                         from_user=msg.from_,
-#                         ai_task=ai_result,
-#                         date=msg.date_sent.strftime('%Y-%m-%d %H:%M:%S'),
-#                         processed=True,
-#                         user_id=user_id
-#                     )
-#                     db.session.add(message)
-#                     db.session.commit()
-#                     print(f"Saved new message sid={msg.sid} for user_id={user_id}")
-#                 except IntegrityError as e:
-#                     db.session.rollback()
-#                     print(f"Error saving message: {e}")
-#                     continue
-#             else:
-#                 print(f"Invalid AI result for sid={msg.sid}, skipping")
-#
-#         # Після обробки — повертаємо всі повідомлення з бази тільки для цього користувача
-#         user_messages = Message.query.filter_by(user_id=user_id).order_by(Message.date.desc()).limit(10).all()
-#
-#         for msg in user_messages:
-#             processed_messages.append({
-#                 'sid': msg.sid,
-#                 'from': msg.from_user,
-#                 'ai_task': msg.ai_task,
-#                 'date': msg.date
-#             })
-#
-#         return jsonify({"messages": processed_messages}), 200
-#
-#     except Exception as e:
-#         print(f"General error in get_messages: {e}")
-#         return jsonify({"error": str(e)}), 500
 
+Store AI task as JSON
 
-#
-#
-#     # @app.route("/get_messages", methods=['GET'])
-# # def get_messages():
-# #     if 'user' not in session:
-# #         return jsonify({"error": "Unauthorized"}), 401
-# #
-# #     try:
-# #         messages = client.messages.list(limit=10)
-# #         processed_messages = []
-# #
-# #         for msg in messages:
-# #             ai_task = get_or_create_ai_task(msg)
-# #             if ai_task is None:
-# #                 continue
-# #
-# #             processed_messages.append({
-# #                 'sid': msg.sid,
-# #                 'from': msg.from_,
-# #                 'ai_task': ai_task,
-# #                 'date': msg.date_sent.strftime('%Y-%m-%d %H:%M:%S')
-# #             })
-# #
-# #         return jsonify({"messages": processed_messages}), 200
-# #
-# #     except Exception as e:
-# #         return jsonify({"error": str(e)}), 500
-#
-# @app.route("/get_messages", methods=['GET'])
-# def get_messages():
-#     if 'user_id' not in session:
-#         return jsonify({"error": "Unauthorized"}), 401
-#
-#     user_id = session['user_id']
-#
-#     try:
-#         messages = Message.query.filter_by(user_id=user_id).order_by(Message.date.desc()).limit(10).all()
-#
-#         processed_messages = []
-#         for msg in messages:
-#             processed_messages.append({
-#                 'sid': msg.sid,
-#                 'from': msg.from_user,
-#                 'ai_task': msg.ai_task,
-#                 'date': msg.date
-#             })
-#
-#         return jsonify({"messages": processed_messages}), 200
-#
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-#
 
 @app.route("/get_messages", methods=['GET'])
 def get_messages():
@@ -524,8 +252,6 @@ def get_or_create_ai_task(msg):
         return None
 
 
-
-
 def delete_from_db(message_sid):
     message = Message.query.filter_by(sid=message_sid).first()
     if message:
@@ -552,9 +278,6 @@ def delete_message(messageSid):
 
 @app.route("/webhook", methods=['POST'])
 def webhook():
-    # Print headers for debugging
-    print(f"Headers: {request.headers}")
-
     if request.content_type == 'application/json':
         data = request.json
     elif request.content_type == 'application/x-www-form-urlencoded':
@@ -562,8 +285,6 @@ def webhook():
     else:
         return "Unsupported Media Type", 415
 
-    # Debugging output
-    print(f"Received webhook data: {data}")
 
     if data:
         return "Webhook received", 200
@@ -600,15 +321,12 @@ from flask import request, jsonify
 
 @app.route('/update_task/<sid>', methods=['POST'])
 def update_task(sid):
-    updated_data = request.json  # словник з оновленими значеннями
-    # Тепер оновіть відповідну задачу в базі даних або іншому сховищі
-
-    # Якщо task у тебе прив’язаний до sid у базі даних:
+    updated_data = request.json 
     message = Message.query.filter_by(sid=sid).first()
     if not message:
         return jsonify({'error': 'Message not found'}), 404
 
-    message.ai_task = updated_data  # Якщо ai_task — це JSONB поле
+    message.ai_task = updated_data  
     db.session.commit()
 
     return jsonify({'success': True})
