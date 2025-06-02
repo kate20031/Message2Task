@@ -8,4 +8,4 @@ def home():
 
 @home_bp.route("/confirmed")
 def confirmed():
-    return render_template("confirmed.html")
+    return render_template('confirmed.html')
