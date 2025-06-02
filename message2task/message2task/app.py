@@ -136,9 +136,9 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 #     flash('You have been logged out.', 'info')
 #     return redirect(url_for('login'))
 
-@app.route("/", methods=['GET'])
-def home():
-    return render_template('home.html')
+# @app.route("/", methods=['GET'])
+# def home():
+#     return render_template('home.html')
 
 def generate_ai_tasks():
     tasks = [
