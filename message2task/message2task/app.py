@@ -252,18 +252,18 @@ Store AI task as JSON
 #         return None
 
 
-def delete_from_db(message_sid):
-    message = Message.query.filter_by(sid=message_sid).first()
-    if message:
-        try:
-            db.session.delete(message)
-            db.session.commit()
-            return True
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error deleting message: {e}")
-            return False
-    return False
+# def delete_from_db(message_sid):
+#     message = Message.query.filter_by(sid=message_sid).first()
+#     if message:
+#         try:
+#             db.session.delete(message)
+#             db.session.commit()
+#             return True
+#         except Exception as e:
+#             db.session.rollback()
+#             print(f"Error deleting message: {e}")
+#             return False
+#     return False
 
 # @app.route('/delete_message/<messageSid>', methods=['DELETE'])
 # def delete_message(messageSid):
