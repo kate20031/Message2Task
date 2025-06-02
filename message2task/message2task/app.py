@@ -1,29 +1,29 @@
-import json
-import os
-from sqlite3 import IntegrityError
+# import json
+# import os
+# from sqlite3 import IntegrityError
 
-from flask_migrate import Migrate
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, render_template, redirect, url_for, flash, session, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-from twilio.rest import Client
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask import render_template
-import os
-from dotenv import load_dotenv
-from .strategy_gemini import GeminiExtractionStrategy
-from .extractor_context import TaskExtractorContext
+# from flask_migrate import Migrate
+# from flask import Flask
+# from flask_sqlalchemy import SQLAlchemy
+# from flask import Flask, request, render_template, redirect, url_for, flash, session, jsonify
+# from werkzeug.security import generate_password_hash, check_password_hash
+# from twilio.rest import Client
+# from flask import Flask
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
+# from flask import render_template
+# import os
+# from dotenv import load_dotenv
+# from .strategy_gemini import GeminiExtractionStrategy
+# from .extractor_context import TaskExtractorContext
 
-load_dotenv()
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# load_dotenv()
+# app = Flask(__name__)
+# app.secret_key = os.urandom(24)
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
 
 
 # class Message(db.Model):
@@ -52,16 +52,16 @@ migrate = Migrate(app, db)
 #     messages = db.relationship('Message', backref='user', lazy=True)
 
 
-@app.before_request
-def before_first_request_func():
-    if not hasattr(app, 'has_run'):
-        app.has_run = True
+# @app.before_request
+# def before_first_request_func():
+#     if not hasattr(app, 'has_run'):
+#         app.has_run = True
 
 
 # Initialize Twilio client
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+# TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+# TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+# client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 
 # @app.route("/register", methods=['GET', 'POST'])
@@ -147,7 +147,7 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 #     ]
 #     return tasks
 
-Store AI task as JSON
+# Store AI task as JSON
 
 
 # @app.route("/get_messages", methods=['GET'])
@@ -295,7 +295,7 @@ Store AI task as JSON
 # def confirmed():
 #     return render_template('confirmed.html')
 
-import re
+# import re
 
 # def normalize_time(raw_time):
 #     """
@@ -317,7 +317,7 @@ import re
 #         return None
 
 
-from flask import request, jsonify
+# from flask import request, jsonify
 
 # @app.route('/update_task/<sid>', methods=['POST'])
 # def update_task(sid):
@@ -331,9 +331,21 @@ from flask import request, jsonify
 
 #     return jsonify({'success': True})
     
+# with app.app_context():
+#     db.create_all()
+    
+# if __name__ == "__main__":
+
+#     app.run(debug=True)
+
+
+from app import create_app, db
+
+app = create_app()
+
 with app.app_context():
     db.create_all()
-    
-if __name__ == "__main__":
 
+if __name__ == '__main__':
     app.run(debug=True)
+
