@@ -60,6 +60,7 @@ def get_messages():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
     
 @messages_bp.route("/update_task/<sid>", methods=['POST'])
 def update_task(sid):
@@ -72,10 +73,19 @@ def update_task(sid):
     db.session.commit()
 
     return jsonify({'success': True})
-    
+  
+  
 @messages_bp.route('/delete_message/<messageSid>', methods=['DELETE'])
 def delete_message(messageSid):
-    ...
+    print(f"Received DELETE request for messageSid={messageSid}")
+    success = delete_from_db(messageSid)
+    if success:
+        print(f"Message {messageSid} deleted successfully")
+        return jsonify({'status': 'deleted'}), 200
+    else:
+        print(f"Message {messageSid} not found")
+        return jsonify({'error': 'Message not found'}), 404
+
 
 @messages_bp.route("/webhook", methods=['POST'])
 def webhook():
