@@ -482,8 +482,8 @@ def get_or_create_ai_task(msg):
         print(f"Using cached AI task for sid={msg.sid}")
         return existing.ai_task
 
-    from strategy_gemini import GeminiExtractionStrategy
-    from extractor_context import TaskExtractorContext
+    from .strategy_gemini import GeminiExtractionStrategy
+    from .extractor_context import TaskExtractorContext
 
     context = TaskExtractorContext(GeminiExtractionStrategy())
     ai_result = context.extract_task(msg.body)
