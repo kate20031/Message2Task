@@ -319,17 +319,17 @@ def normalize_time(raw_time):
 
 from flask import request, jsonify
 
-@app.route('/update_task/<sid>', methods=['POST'])
-def update_task(sid):
-    updated_data = request.json 
-    message = Message.query.filter_by(sid=sid).first()
-    if not message:
-        return jsonify({'error': 'Message not found'}), 404
+# @app.route('/update_task/<sid>', methods=['POST'])
+# def update_task(sid):
+#     updated_data = request.json 
+#     message = Message.query.filter_by(sid=sid).first()
+#     if not message:
+#         return jsonify({'error': 'Message not found'}), 404
 
-    message.ai_task = updated_data  
-    db.session.commit()
+#     message.ai_task = updated_data  
+#     db.session.commit()
 
-    return jsonify({'success': True})
+#     return jsonify({'success': True})
     
 with app.app_context():
     db.create_all()
