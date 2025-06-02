@@ -12,7 +12,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask import render_template
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://messageuser:1234@localhost/message2taskdb'
