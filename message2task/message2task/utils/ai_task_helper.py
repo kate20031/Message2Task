@@ -52,3 +52,11 @@ def get_or_create_ai_task(msg):
         db.session.rollback()
         print(f"Integrity error при збереженні sid={msg.sid}")
         return None
+
+
+def generate_ai_tasks():
+    tasks = [
+        {"task": "Explain the concept of the sun", "status": "pending"},
+        {"task": "Describe the sun's impact on Earth's climate", "status": "pending"}
+    ]
+    return tasks
