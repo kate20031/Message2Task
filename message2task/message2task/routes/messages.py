@@ -63,7 +63,15 @@ def get_messages():
     
 @messages_bp.route("/update_task/<sid>", methods=['POST'])
 def update_task(sid):
-    ...
+    updated_data = request.json 
+    message = Message.query.filter_by(sid=sid).first()
+    if not message:
+        return jsonify({'error': 'Message not found'}), 404
+
+    message.ai_task = updated_data  
+    db.session.commit()
+
+    return jsonify({'success': True})
     
 @messages_bp.route('/delete_message/<messageSid>', methods=['DELETE'])
 def delete_message(messageSid):
