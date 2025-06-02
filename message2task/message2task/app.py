@@ -265,16 +265,16 @@ def delete_from_db(message_sid):
             return False
     return False
 
-@app.route('/delete_message/<messageSid>', methods=['DELETE'])
-def delete_message(messageSid):
-    print(f"Received DELETE request for messageSid={messageSid}")
-    success = delete_from_db(messageSid)
-    if success:
-        print(f"Message {messageSid} deleted successfully")
-        return jsonify({'status': 'deleted'}), 200
-    else:
-        print(f"Message {messageSid} not found")
-        return jsonify({'error': 'Message not found'}), 404
+# @app.route('/delete_message/<messageSid>', methods=['DELETE'])
+# def delete_message(messageSid):
+#     print(f"Received DELETE request for messageSid={messageSid}")
+#     success = delete_from_db(messageSid)
+#     if success:
+#         print(f"Message {messageSid} deleted successfully")
+#         return jsonify({'status': 'deleted'}), 200
+#     else:
+#         print(f"Message {messageSid} not found")
+#         return jsonify({'error': 'Message not found'}), 404
 
 @app.route("/webhook", methods=['POST'])
 def webhook():
