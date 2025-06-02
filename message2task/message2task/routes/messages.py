@@ -101,3 +101,12 @@ def webhook():
         return "Webhook received", 200
     else:
         return "No data received", 400
+
+@messages_bp.route('/add_message', methods=['POST'])
+def add_message():
+    data = request.json
+    new_message = Message(content=data['content'])
+    db.session.add(new_message)
+    db.session.commit()
+    return jsonify({'message': 'Message saved successfully!'})
+
