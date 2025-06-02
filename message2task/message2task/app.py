@@ -74,6 +74,8 @@ def before_first_request_func():
 
 
 # Initialize Twilio client
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 # db = SQLAlchemy(app)
 
