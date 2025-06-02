@@ -14,8 +14,8 @@ from flask_migrate import Migrate
 from flask import render_template
 import os
 from dotenv import load_dotenv
-from strategy_gemini import GeminiExtractionStrategy
-from extractor_context import TaskExtractorContext
+from .strategy_gemini import GeminiExtractionStrategy
+from .extractor_context import TaskExtractorContext
 
 load_dotenv()
 app = Flask(__name__)
