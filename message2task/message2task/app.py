@@ -70,10 +70,7 @@ def before_first_request_func():
 
 # users_db = {}
 
-# Twilio credentials
-TWILIO_ACCOUNT_SID = 'AC658536469a94b2b487211163ae13182d'
-TWILIO_AUTH_TOKEN = '0568e48d26312f6f5d90131880f3e593'
-TWILIO_PHONE_NUMBER = '+380933200762'
+
 
 
 # Initialize Twilio client
