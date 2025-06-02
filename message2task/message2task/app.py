@@ -276,20 +276,20 @@ def delete_from_db(message_sid):
 #         print(f"Message {messageSid} not found")
 #         return jsonify({'error': 'Message not found'}), 404
 
-@app.route("/webhook", methods=['POST'])
-def webhook():
-    if request.content_type == 'application/json':
-        data = request.json
-    elif request.content_type == 'application/x-www-form-urlencoded':
-        data = request.form.to_dict()
-    else:
-        return "Unsupported Media Type", 415
+# @app.route("/webhook", methods=['POST'])
+# def webhook():
+#     if request.content_type == 'application/json':
+#         data = request.json
+#     elif request.content_type == 'application/x-www-form-urlencoded':
+#         data = request.form.to_dict()
+#     else:
+#         return "Unsupported Media Type", 415
 
 
-    if data:
-        return "Webhook received", 200
-    else:
-        return "No data received", 400
+#     if data:
+#         return "Webhook received", 200
+#     else:
+#         return "No data received", 400
 
 @app.route('/confirmed')
 def confirmed():
