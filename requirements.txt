@@ -4,3 +4,4 @@ twilio~=9.4.3
 requests~=2.32.3
 dateparser~=1.2.0
 gunicorn
+flask_sqlalchemy
