@@ -291,9 +291,9 @@ def delete_from_db(message_sid):
 #     else:
 #         return "No data received", 400
 
-@app.route('/confirmed')
-def confirmed():
-    return render_template('confirmed.html')
+# @app.route('/confirmed')
+# def confirmed():
+#     return render_template('confirmed.html')
 
 import re
 
