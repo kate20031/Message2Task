@@ -1,4 +1,4 @@
-from strategy_interface import TaskExtractionStrategy
+from .strategy_interface import TaskExtractionStrategy
 
 class DummyExtractionStrategy(TaskExtractionStrategy):
     def extract(self, message: str) -> dict:
