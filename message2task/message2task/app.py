@@ -14,6 +14,8 @@ from flask_migrate import Migrate
 from flask import render_template
 import os
 from dotenv import load_dotenv
+from strategy_gemini import GeminiExtractionStrategy
+from extractor_context import TaskExtractorContext
 
 load_dotenv()
 app = Flask(__name__)
@@ -434,8 +436,6 @@ def get_messages():
         messages = client.messages.list(limit=10)
 
         processed_messages = []
-        from strategy_gemini import GeminiExtractionStrategy
-        from extractor_context import TaskExtractorContext
 
         context = TaskExtractorContext(GeminiExtractionStrategy())
 
