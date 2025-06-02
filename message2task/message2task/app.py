@@ -112,21 +112,21 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 #     return render_template('login.html')
 
 
-@app.route("/dashboard")
-def dashboard():
-    if 'user_id' not in session:
-        flash('You need to log in first.', 'warning')
-        return redirect(url_for('login'))
+# @app.route("/dashboard")
+# def dashboard():
+#     if 'user_id' not in session:
+#         flash('You need to log in first.', 'warning')
+#         return redirect(url_for('login'))
 
-    messages = Message.query.filter_by(user_id=session['user_id']).order_by(Message.date.desc()).limit(10).all()
+#     messages = Message.query.filter_by(user_id=session['user_id']).order_by(Message.date.desc()).limit(10).all()
 
-    message_list = [{
-        'from': msg.from_user,
-        'ai_task': msg.ai_task,
-        'date': msg.date
-    } for msg in messages]
+#     message_list = [{
+#         'from': msg.from_user,
+#         'ai_task': msg.ai_task,
+#         'date': msg.date
+#     } for msg in messages]
 
-    return render_template('dashboard.html', username=session['user'], messages=message_list)
+#     return render_template('dashboard.html', username=session['user'], messages=message_list)
 
 
 # @app.route("/logout")
@@ -150,57 +150,57 @@ def generate_ai_tasks():
 Store AI task as JSON
 
 
-@app.route("/get_messages", methods=['GET'])
-def get_messages():
-    if 'user_id' not in session:
-        return jsonify({"error": "Unauthorized"}), 401
+# @app.route("/get_messages", methods=['GET'])
+# def get_messages():
+#     if 'user_id' not in session:
+#         return jsonify({"error": "Unauthorized"}), 401
 
-    user = User.query.get(session['user_id'])
-    if not user or not user.twilio_sid or not user.twilio_token:
-        return jsonify({"error": "Twilio credentials not configured"}), 400
+#     user = User.query.get(session['user_id'])
+#     if not user or not user.twilio_sid or not user.twilio_token:
+#         return jsonify({"error": "Twilio credentials not configured"}), 400
 
-    try:
-        client = Client(user.twilio_sid, user.twilio_token)
-        messages = client.messages.list(limit=10)
+#     try:
+#         client = Client(user.twilio_sid, user.twilio_token)
+#         messages = client.messages.list(limit=10)
 
-        processed_messages = []
+#         processed_messages = []
 
-        context = TaskExtractorContext(GeminiExtractionStrategy())
+#         context = TaskExtractorContext(GeminiExtractionStrategy())
 
-        for msg in messages:
-            if Message.query.filter_by(sid=msg.sid).first():
-                continue
+#         for msg in messages:
+#             if Message.query.filter_by(sid=msg.sid).first():
+#                 continue
 
-            ai_result = context.extract_task(msg.body)
+#             ai_result = context.extract_task(msg.body)
 
-            if isinstance(ai_result, dict):
-                if 'Time' in ai_result:
-                    ai_result['Time'] = normalize_time(ai_result['Time'])
+#             if isinstance(ai_result, dict):
+#                 if 'Time' in ai_result:
+#                     ai_result['Time'] = normalize_time(ai_result['Time'])
 
-                message = Message(
-                    sid=msg.sid,
-                    from_user=msg.from_,
-                    ai_task=ai_result,
-                    date=msg.date_sent.strftime('%Y-%m-%d %H:%M:%S'),
-                    processed=True,
-                    user_id=user.id
-                )
-                db.session.add(message)
-                db.session.commit()
+#                 message = Message(
+#                     sid=msg.sid,
+#                     from_user=msg.from_,
+#                     ai_task=ai_result,
+#                     date=msg.date_sent.strftime('%Y-%m-%d %H:%M:%S'),
+#                     processed=True,
+#                     user_id=user.id
+#                 )
+#                 db.session.add(message)
+#                 db.session.commit()
 
-        # Отримуємо повідомлення з БД для конкретного користувача
-        user_messages = Message.query.filter_by(user_id=user.id).order_by(Message.date.desc()).limit(10).all()
-        return jsonify({
-            "messages": [{
-                'sid': m.sid,
-                'from': m.from_user,
-                'ai_task': m.ai_task,
-                'date': m.date
-            } for m in user_messages]
-        }), 200
+#         # Отримуємо повідомлення з БД для конкретного користувача
+#         user_messages = Message.query.filter_by(user_id=user.id).order_by(Message.date.desc()).limit(10).all()
+#         return jsonify({
+#             "messages": [{
+#                 'sid': m.sid,
+#                 'from': m.from_user,
+#                 'ai_task': m.ai_task,
+#                 'date': m.date
+#             } for m in user_messages]
+#         }), 200
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 
 
