@@ -15,7 +15,8 @@ from flask import render_template
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://messageuser:1234@localhost/message2taskdb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://messageuser:1234@localhost/message2taskdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
