@@ -6,3 +6,4 @@ dateparser~=1.2.0
 gunicorn
 flask_sqlalchemy
 flask_migrate
+psycopg2-binary
