@@ -140,12 +140,12 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 # def home():
 #     return render_template('home.html')
 
-def generate_ai_tasks():
-    tasks = [
-        {"task": "Explain the concept of the sun", "status": "pending"},
-        {"task": "Describe the sun's impact on Earth's climate", "status": "pending"}
-    ]
-    return tasks
+# def generate_ai_tasks():
+#     tasks = [
+#         {"task": "Explain the concept of the sun", "status": "pending"},
+#         {"task": "Describe the sun's impact on Earth's climate", "status": "pending"}
+#     ]
+#     return tasks
 
 Store AI task as JSON
 
