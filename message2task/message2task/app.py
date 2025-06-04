@@ -339,7 +339,8 @@
 #     app.run(debug=True)
 
 
-from app import create_app, db
+from message2task import create_app, db
+
 
 app = create_app()
 
