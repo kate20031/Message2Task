@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, jsonify
 from ..models import Message, User, db
-from utils.time_utils import normalize_time
+from ..utils.time_utils import normalize_time
 from strategy_gemini import GeminiExtractionStrategy
 from extractor_context import TaskExtractorContext
 from twilio.rest import Client
