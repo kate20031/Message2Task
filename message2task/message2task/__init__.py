@@ -67,12 +67,13 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     
-    from .routes import dashboard_bp, auth_bp, messages_bp, webhook_bp
+
+    from .routes import dashboard_bp, auth_bp, messages_bp
     
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(messages_bp)
-    app.register_blueprint(webhook_bp)
+        app.register_blueprint(dashboard_bp)
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(messages_bp)
+
 
 
     return app
