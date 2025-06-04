@@ -73,7 +73,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(home_bp)
-
+    print(app.url_map) 
 
 
     return app
