@@ -13,15 +13,24 @@
         <h2>Create tasks directly from messages!</h2>
         <p>Manage your tasks effortlessly by registering or logging in below.</p>
 
-        <!-- Buttons Container -->
         <div class="buttons-container">
+            <a href="{{ url_for('auth.register') }}">
+                <button>Register</button>
+            </a>
+            <a href="{{ url_for('auth.login') }}">
+                <button>Login</button>
+            </a>
+        </div>
+
+        <!-- Buttons Container -->
+<!--         <div class="buttons-container">
             <a href="{{ url_for('register') }}">
                 <button>Register</button>
             </a>
             <a href="{{ url_for('login') }}">
                 <button>Login</button>
             </a>
-        </div>
+        </div> -->
     </div>
 
     <footer>
