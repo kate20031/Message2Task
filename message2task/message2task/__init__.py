@@ -69,10 +69,10 @@ def create_app():
     
 
     from .routes import dashboard_bp, auth_bp, messages_bp
-    
-        app.register_blueprint(dashboard_bp)
-        app.register_blueprint(auth_bp)
-        app.register_blueprint(messages_bp)
+
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(messages_bp)
 
 
 
