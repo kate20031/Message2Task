@@ -1,5 +1,6 @@
 from flask import Blueprint, session, render_template, redirect, url_for, flash
-from models import Message
+from ..models import Message
+
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
