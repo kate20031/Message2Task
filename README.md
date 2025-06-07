@@ -45,3 +45,27 @@ git clone https://github.com/kate20031/Message2Task.git
 cd Message2Task
 flutter pub get
 flutter run
+```
+
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Flutter](https://img.shields.io/badge/Flutter-3.10.0-blue)](https://flutter.dev)
+[![GitHub issues](https://img.shields.io/github/issues/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/issues)
+[![GitHub stars](https://img.shields.io/github/stars/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/network/members)
+
+## How to Use
+
+- Open the app and view your messages dashboard.
+- New messages automatically convert into tasks with parsed details.
+- Confirm tasks once reviewed or edit details like date/time manually.
+- Delete tasks you no longer need.
+- Visit the “Confirmed” page to see your saved tasks anytime.
+
+## Contributing
+
+Contributions and feedback are welcome! Feel free to open issues or submit pull requests.
+
+## License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
