@@ -33,19 +33,46 @@ Check out the app live on [message2task.onrender.com](https://message2task.onren
 
 Want to run the app locally or contribute? Here’s how:
 
+
+## Installation
+
+Follow these steps to set up and run the **Message2Task** project locally. This project includes a Python Flask backend and a Flutter frontend.
+
 ### Prerequisites
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install)  
-- Code editor like VS Code or Android Studio  
+- Python 3.7+ installed
+- Flutter SDK installed ([Flutter installation guide](https://flutter.dev/docs/get-started/install))
+- Git installed
 
-### Installation & Run
+---
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/kate20031/Message2Task.git
 cd Message2Task
-flutter pub get
-flutter run
 ```
+
+### 2. Setup and run the backend (Python Flask)
+
+It's recommended to use a virtual environment:
+
+```
+python3 -m venv venv
+source venv/bin/activate        # On Windows use: venv\Scripts\activate
+pip install -r requirements.txt
+```
+Set environment variables if necessary (check `.env` file).
+
+Start the Flask backend server:
+
+```bash
+python app.py
+```
+
+By default, the backend will run on [http://localhost:5000](http://localhost:5000).
+
+
 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
