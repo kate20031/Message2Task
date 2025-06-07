@@ -99,50 +99,90 @@ confirmButton.onclick = function() {
             const editButton = document.createElement("button");
             editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
 
-
-
             editButton.onclick = function () {
-                content.innerHTML = "";  // Очищаємо старий вивід
-
+                content.innerHTML = "";  // Clear old content
                 Object.entries(msg.ai_task).forEach(([key, value]) => {
                     const label = document.createElement("label");
                     label.textContent = key;
-                    content.appendChild(label);
-
+            
                     const input = document.createElement("input");
-                    input.name = key;
-                    input.className = "edit-input";
-
                     const keyLower = key.toLowerCase();
-
+            
                     if (keyLower.includes("date")) {
                         input.type = "date";
-
-                        // Перетворюємо з DD.MM.YY у YYYY-MM-DD
+            
+                        // Convert from DD.MM.YY to YYYY-MM-DD for input value
                         if (value && /^\d{2}\.\d{2}\.\d{2}$/.test(value)) {
                             const [d, m, y] = value.split(".");
                             input.value = `20${y}-${m}-${d}`;
                         } else {
                             input.value = "";
                         }
-
                     } else if (keyLower.includes("time")) {
                         input.type = "time";
+            
+                        // Ensure value is in HH:MM format (you may want to normalize it)
                         input.value = value && /^\d{2}:\d{2}$/.test(value) ? value : "";
                     } else {
                         input.type = "text";
                         input.value = value || "";
                     }
-
+            
+                    input.name = key;
+                    input.className = "edit-input";
+            
+                    content.appendChild(label);
                     content.appendChild(input);
                     content.appendChild(document.createElement("br"));
                 });
-
-
+            
                 editButton.style.display = "none";
                 saveButton.style.display = "inline-block";
                 confirmButton.disabled = true;
             };
+
+            // editButton.onclick = function () {
+            //     content.innerHTML = "";  // Очищаємо старий вивід
+
+            //     Object.entries(msg.ai_task).forEach(([key, value]) => {
+            //         const label = document.createElement("label");
+            //         label.textContent = key;
+            //         content.appendChild(label);
+
+            //         const input = document.createElement("input");
+            //         input.name = key;
+            //         input.className = "edit-input";
+
+            //         const keyLower = key.toLowerCase();
+
+            //         if (keyLower.includes("date")) {
+            //             input.type = "date";
+
+            //             // Перетворюємо з DD.MM.YY у YYYY-MM-DD
+            //             if (value && /^\d{2}\.\d{2}\.\d{2}$/.test(value)) {
+            //                 const [d, m, y] = value.split(".");
+            //                 input.value = `20${y}-${m}-${d}`;
+            //             } else {
+            //                 input.value = "";
+            //             }
+
+            //         } else if (keyLower.includes("time")) {
+            //             input.type = "time";
+            //             input.value = value && /^\d{2}:\d{2}$/.test(value) ? value : "";
+            //         } else {
+            //             input.type = "text";
+            //             input.value = value || "";
+            //         }
+
+            //         content.appendChild(input);
+            //         content.appendChild(document.createElement("br"));
+            //     });
+
+
+            //     editButton.style.display = "none";
+            //     saveButton.style.display = "inline-block";
+            //     confirmButton.disabled = true;
+            // };
 
 
             // Save button
