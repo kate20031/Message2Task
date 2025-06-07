@@ -48,7 +48,7 @@ def get_messages():
                 db.session.add(message)
                 db.session.commit()
 
-        # Отримуємо повідомлення з БД для конкретного користувача
+        # Getting messages from database for concrete user
         user_messages = Message.query.filter_by(user_id=user.id).order_by(Message.date.desc()).limit(10).all()
         return jsonify({
             "messages": [{
