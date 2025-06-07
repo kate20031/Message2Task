@@ -2,7 +2,7 @@ import re
 import requests
 import json
 from datetime import datetime, timedelta
-import dateparser  # Install using: pip install dateparser
+import dateparser  
 
 
 def extract_task_from_message(message):
@@ -52,7 +52,6 @@ def extract_task_from_message(message):
                 json_data = match.group(1).strip()
                 try:
                     task_details = json.loads(json_data)
-                    # Convert relative dates to absolute dates
                     task_details["Date"] = convert_to_absolute_date(task_details.get("Date", ""))
                     return task_details
                 except json.JSONDecodeError:
@@ -74,8 +73,7 @@ def convert_to_absolute_date(date_str):
     return None
 
 
-# Example usage
-if __name__ == "__main__":
-    message = "Let's meet tomorrow at the park at 3 PM to discuss the project."
-    task_details = extract_task_from_message(message)
-    print("Extracted Task Details:", task_details)
+# if __name__ == "__main__":
+#     message = "Let's meet tomorrow at the park at 3 PM to discuss the project."
+#     task_details = extract_task_from_message(message)
+#     print("Extracted Task Details:", task_details)
