@@ -5,6 +5,7 @@ from ..strategy_gemini import GeminiExtractionStrategy
 from ..extractor_context import TaskExtractorContext
 from twilio.rest import Client
 from sqlite3 import IntegrityError
+from message2task.utils.message_utils import delete_from_db
 
 messages_bp = Blueprint('messages', __name__)
 
