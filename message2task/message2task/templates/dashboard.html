@@ -1,513 +1,458 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-
-    <button id="refresh-btn" class="btn btn-primary">Refresh</button>
-<div id="status"></div>
-
-<script>
-
-const REFRESH_BTN = document.getElementById("refresh-btn");
-const STATUS = document.getElementById("status");
-const KNOWN_SIDS_KEY = "knownMessageSids";
-
-function getKnownSids() {
-    return new Set(JSON.parse(localStorage.getItem(KNOWN_SIDS_KEY)) || []);
-}
-
-function saveKnownSids(sids) {
-    localStorage.setItem(KNOWN_SIDS_KEY, JSON.stringify([...sids]));
-}
-
-function updateMessagesDOM(messages) {
-     const messagesDiv = document.getElementById("messages");
-    messagesDiv.innerHTML = "";
-
-    const confirmedSids = new Set(JSON.parse(localStorage.getItem("confirmedMessageSids") || "[]"));
-
-    messages.forEach(msg => {
-        if (deletedMessages.has(msg.sid)) return;
-        if (confirmedSids.has(msg.sid)) return;  // Пропускаємо підтверджені таски
-
-        const messageElement = document.createElement("div");
-        messageElement.className = "message";
-        messageElement.setAttribute('data-sid', msg.sid);
-
-
-
-        let aiContent = msg.ai_task && Object.keys(msg.ai_task).length > 0
-            ? "<ul>" + Object.entries(msg.ai_task).map(([key, value]) =>
-                `<li><strong>${key}:</strong> ${value || 'Not specified'}</li>`).join('') + "</ul>"
-            : "<p>No task data available.</p>";
-
-        const sender = document.createElement("strong");
-        sender.textContent = msg.from;
-
-        const content = document.createElement("div");
-        content.innerHTML = aiContent;
-
-        const date = document.createElement("em");
-        date.textContent = `(${msg.date})`;
-
-        messageElement.appendChild(sender);
-        messageElement.appendChild(content);
-        messageElement.appendChild(date);
-
-        // Confirm button
-        const confirmButton = document.createElement("button");
-        confirmButton.textContent = "Confirm";
-
-confirmButton.onclick = function() {
-    if (confirmButton.disabled) {
-        alert("First you have to save changes (click save button)");
-        return;
-    }
-    // Отримуємо масив повних підтверджених повідомлень
-    let confirmedMessages = JSON.parse(localStorage.getItem("confirmedMessages") || "[]");
-    if (!confirmedMessages.find(m => m.sid === msg.sid)) {
-        confirmedMessages.push(msg);
-        localStorage.setItem("confirmedMessages", JSON.stringify(confirmedMessages));
-    }
-
-    // Отримуємо масив sid підтверджених повідомлень
-    let confirmedSids = JSON.parse(localStorage.getItem("confirmedMessageSids") || "[]");
-    if (!confirmedSids.includes(msg.sid)) {
-        confirmedSids.push(msg.sid);
-        localStorage.setItem("confirmedMessageSids", JSON.stringify(confirmedSids));
-    }
-
-    alert("Task confirmed and saved!");
-    messageElement.remove();
-};
-
-
-        // Delete button
-        const deleteButton = document.createElement("button");
-        deleteButton.className = "delete-button";
-        deleteButton.textContent = "Delete";
-
-
-
-                           // Edit button
-            const editButton = document.createElement("button");
-            editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
-
-            editButton.onclick = function () {
-                content.innerHTML = "";  // Clear old content
-                Object.entries(msg.ai_task).forEach(([key, value]) => {
-                    const label = document.createElement("label");
-                    label.textContent = key;
-            
-                    const input = document.createElement("input");
-                    const keyLower = key.toLowerCase();
-            
-                    if (keyLower.includes("date")) {
-                        input.type = "date";
-            
-                        // Convert from DD.MM.YY to YYYY-MM-DD for input value
-                        if (value && /^\d{2}\.\d{2}\.\d{2}$/.test(value)) {
-                            const [d, m, y] = value.split(".");
-                            input.value = `20${y}-${m}-${d}`;
-                        } else {
-                            input.value = "";
-                        }
-                    } else if (keyLower.includes("time")) {
-                        input.type = "time";
-            
-                        // Ensure value is in HH:MM format (you may want to normalize it)
-                        input.value = value && /^\d{2}:\d{2}$/.test(value) ? value : "";
-                    } else {
-                        input.type = "text";
-                        input.value = value || "";
-                    }
-            
-                    input.name = key;
-                    input.className = "edit-input";
-            
-                    content.appendChild(label);
-                    content.appendChild(input);
-                    content.appendChild(document.createElement("br"));
-                });
-            
-                editButton.style.display = "none";
-                saveButton.style.display = "inline-block";
-                confirmButton.disabled = true;
-            };
-
-            // editButton.onclick = function () {
-            //     content.innerHTML = "";  // Очищаємо старий вивід
-
-            //     Object.entries(msg.ai_task).forEach(([key, value]) => {
-            //         const label = document.createElement("label");
-            //         label.textContent = key;
-            //         content.appendChild(label);
-
-            //         const input = document.createElement("input");
-            //         input.name = key;
-            //         input.className = "edit-input";
-
-            //         const keyLower = key.toLowerCase();
-
-            //         if (keyLower.includes("date")) {
-            //             input.type = "date";
-
-            //             // Перетворюємо з DD.MM.YY у YYYY-MM-DD
-            //             if (value && /^\d{2}\.\d{2}\.\d{2}$/.test(value)) {
-            //                 const [d, m, y] = value.split(".");
-            //                 input.value = `20${y}-${m}-${d}`;
-            //             } else {
-            //                 input.value = "";
-            //             }
-
-            //         } else if (keyLower.includes("time")) {
-            //             input.type = "time";
-            //             input.value = value && /^\d{2}:\d{2}$/.test(value) ? value : "";
-            //         } else {
-            //             input.type = "text";
-            //             input.value = value || "";
-            //         }
-
-            //         content.appendChild(input);
-            //         content.appendChild(document.createElement("br"));
-            //     });
-
-
-            //     editButton.style.display = "none";
-            //     saveButton.style.display = "inline-block";
-            //     confirmButton.disabled = true;
-            // };
-
-
-            // Save button
-            const saveButton = document.createElement("button");
-            saveButton.innerHTML = '<i class="fas fa-save"></i> Save';
-            saveButton.style.display = "none";
-
-            saveButton.onclick = function () {
-            const updatedTask = {};
-            const inputs = content.querySelectorAll(".edit-input");
-            inputs.forEach(input => {
-                const key = input.name.toLowerCase();
-                let value = input.value;
-
-                if (input.type === "date" && value) {
-                    // Перетворюємо з YYYY-MM-DD → DD.MM.YY
-                    const [y, m, d] = value.split("-");
-                    value = `${d}.${m}.${y.slice(2)}`;
-                }
-
-                updatedTask[input.name] = value;
-            });
-
-            fetch(`/update_task/${msg.sid}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updatedTask)
-            })
-                .then(res => {
-                    if (res.ok) {
-                        alert("Task updated successfully!");
-                        saveButton.style.display = "none";
-                        editButton.style.display = "inline-block";
-
-                        // 💡 ОНОВЛЮЄМО СТАН В ОБ'ЄКТІ
-                        msg.ai_task = updatedTask;
-
-                        // Перегенеруємо HTML
-                        content.innerHTML = "<ul>" + Object.entries(updatedTask).map(
-                            ([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`
-                        ).join('') + "</ul>";
-                        confirmButton.disabled = false;
-                    } else {
-                        alert("Failed to update task.");
-                    }
-                });
-            };
-
-
-        messageElement.appendChild(editButton);
-        messageElement.appendChild(saveButton);
-
-        messageElement.appendChild(confirmButton);
-        messageElement.appendChild(deleteButton);
-        messagesDiv.appendChild(messageElement);
-    });
-}
-
-function checkNewMessages() {
-    REFRESH_BTN.disabled = true;
-    STATUS.innerText = "Checking for new messages...";
-    showLoader()
-
-    fetch("/get_messages?cache_buster=" + Date.now())
-        .then(res => res.json())
-        .then(data => {
-            if (!data.messages || data.error) {
-                STATUS.innerText = data.error || "Failed to retrieve new messages.";
-                return;
-            }
-
-            const knownSids = getKnownSids();
-            const currentSids = new Set(data.messages.map(msg => msg.sid));
-
-            // Нові повідомлення — тих sid, яких немає серед відомих
-            const newSids = [...currentSids].filter(sid => !knownSids.has(sid));
-
-            if (newSids.length > 0) {
-                STATUS.innerText = `New messages added: ${newSids.length}`;
-            } else {
-                STATUS.innerText = "No new messages.";
-            }
-
-            updateMessagesDOM(data.messages);
-
-            // Після оновлення зберігаємо всі sid як "відомі", щоб при наступній перевірці рахувати тільки дійсно нові
-            saveKnownSids(currentSids);
-        })
-        .catch(err => {
-            STATUS.innerText = "Помилка при отриманні повідомлень.";
-            console.error(err);
-        })
-        .finally(() => {
-            REFRESH_BTN.disabled = false;
-            hideLoader();
-        });
-}
-
-REFRESH_BTN.addEventListener("click", checkNewMessages);
-
-
-</script>
-
-    <script>
-    let deletedMessages = new Set(JSON.parse(localStorage.getItem("deletedMessages")) || []);
-
-    function fetchMessages() {
-        fetch("/get_messages")
-            .then(response => response.json())
-            .then(data => {
-                const messagesDiv = document.getElementById("messages");
-                messagesDiv.innerHTML = "";
-
-                if (!data.messages || data.error) {
-                    messagesDiv.innerHTML = `<p class="error-message">Error: ${data.error || "No messages found."}</p>`;
-                    return;
-                }
-
-                data.messages.forEach(msg => {
-                    console.log('Message:', msg);   // <-- тут дивимось всі повідомлення
-                    if (deletedMessages.has(msg.sid)) {
-                        return;  // Skip deleted messages
-                    }
-
-                    const messageElement = document.createElement("div");
-                    messageElement.className = "message";
-                    messageElement.setAttribute('data-sid', msg.sid); // <- Додає sid як data-атрибут
-
-
-                    let aiContent = msg.ai_task && Object.keys(msg.ai_task).length > 0
-                        ? "<ul>" + Object.entries(msg.ai_task).map(([key, value]) =>
-                            `<li><strong>${key}:</strong> ${value || 'Not specified'}</li>`).join('') + "</ul>"
-                        : "<p>No task data available.</p>";
-
-                    const sender = document.createElement("strong");
-sender.textContent = msg.from;
-
-const content = document.createElement("div");
-content.innerHTML = aiContent; // Тут уже можна використовувати innerHTML
-
-const date = document.createElement("em");
-date.textContent = `(${msg.date})`;
-
-messageElement.appendChild(sender);
-messageElement.appendChild(content);
-messageElement.appendChild(date);
-
-
-                    // Confirm button
-                    const confirmButton = document.createElement("button");
-                    confirmButton.textContent = "My confirmed events";
-                    confirmButton.onclick = function() {
-                        alert("Task confirmed!");
-                    };
-
-                    confirmButton.onclick = function() {
-                    if (confirmButton.disabled) {
-                        alert("First you have to save changes (click save button)");
-                        return;
-                    }
-                    const confirmed = JSON.parse(localStorage.getItem("confirmedMessages") || "[]");
-                    confirmed.push(msg);
-                    localStorage.setItem("confirmedMessages", JSON.stringify(confirmed));
-                    alert("Task confirmed and saved!");
-                };
-
-
-
-                    // Delete button
-                    const deleteButton = document.createElement("button");
-                    deleteButton.className = "delete-button";
-                    deleteButton.textContent = "Delete";
-
-
-                    messageElement.appendChild(confirmButton);
-                    messageElement.appendChild(deleteButton);
-
-
-
-
-                           // Edit button
-            const editButton = document.createElement("button");
-            editButton.textContent = "Edit";
-
-            editButton.onclick = function () {
-                content.innerHTML = "";  // Очищаємо старий вивід
-                Object.entries(msg.ai_task).forEach(([key, value]) => {
-                    const label = document.createElement("label");
-                    label.textContent = key;
-                    const input = document.createElement("input");
-                    input.type = "text";
-                    input.name = key;
-                    input.value = value || "";
-                    input.className = "edit-input";
-                    content.appendChild(label);
-                    content.appendChild(input);
-                    content.appendChild(document.createElement("br"));
-                });
-
-                editButton.style.display = "none";
-                saveButton.style.display = "inline-block";
-            };
-
-            // Save button
-            const saveButton = document.createElement("button");
-            saveButton.textContent = "Save";
-            saveButton.style.display = "none";
-
-            saveButton.onclick = function () {
-                const updatedTask = {};
-                const inputs = content.querySelectorAll(".edit-input");
-                inputs.forEach(input => {
-                    updatedTask[input.name] = input.value;
-                });
-
-                fetch(`/update_task/${msg.sid}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(updatedTask)
-                })
-                    .then(res => {
-                        if (res.ok) {
-                            alert("Task updated successfully!");
-                            saveButton.style.display = "none";
-                            editButton.style.display = "inline-block";
-
-                            content.innerHTML = "<ul>" + Object.entries(updatedTask).map(
-                                ([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`
-                            ).join('') + "</ul>";
-                        } else {
-                            alert("Failed to update task.");
-                        }
-                    });
-            };
-
-            messageElement.appendChild(editButton);
-            messageElement.appendChild(saveButton);
-                    messagesDiv.appendChild(messageElement);
-                });
-            })
-            .catch(error => console.error('Error fetching messages:', error));
-    }
-
-
-window.onload = () => {
-    fetch("/get_messages")
-        .then(res => res.json())
-        .then(data => {
-            if (data.messages) {
-                updateMessagesDOM(data.messages);
-                const allSids = new Set(data.messages.map(m => m.sid));
-                saveKnownSids(allSids);
-            }
-        })
-        .catch(console.error);
-  // fetchMessages();
-
-  document.getElementById('messages').addEventListener('click', (event) => {
-      document.querySelectorAll('.message').forEach(el => console.log(el.getAttribute('data-sid')));
-    if (event.target.classList.contains('delete-button')) {
-      console.log('Delete button clicked!');
-      const messageDiv = event.target.closest('.message');
-      const messageSid = messageDiv.getAttribute('data-sid');
-      if (messageSid) {
-        fetch(`/delete_message/${messageSid}`, { method: 'DELETE' })
-          .then(response => {
-            if (response.ok) {
-              deletedMessages.add(messageSid);
-              localStorage.setItem("deletedMessages", JSON.stringify([...deletedMessages]));
-              messageDiv.remove();
-              console.log('Message deleted successfully');
-            } else {
-              return response.json();
-            }
-          })
-          .then(errorData => {
-            if (errorData && errorData.error) {
-              console.error('Error deleting message:', errorData.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error deleting message:', error);
-          });
-      }
-    }
-  });
-}
-
-function showLoader() {
-    const loader = document.querySelector('.loader');
-    if (loader) loader.style.display = 'block';
-}
-
-function hideLoader() {
-    const loader = document.querySelector('.loader');
-    if (loader) loader.style.display = 'none';
-}
-
-
-// setInterval(fetchMessages, 20000);
-
-</script>
-
-</head>
-<body>
-<div style="position: absolute; top: 20px; right: 20px;">
-    <a href="{{ url_for('home.confirmed') }}" class="confirmed-button">Confirmed</a>
-</div>
-    <div class="container">
-        <header>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dashboard</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+      <button id="refresh-btn" class="btn btn-primary">Refresh</button>
+      <div id="status"></div>
+      <script>
+         const REFRESH_BTN = document.getElementById("refresh-btn");
+         const STATUS = document.getElementById("status");
+         const KNOWN_SIDS_KEY = "knownMessageSids";
+         
+         function getKnownSids() {
+             return new Set(JSON.parse(localStorage.getItem(KNOWN_SIDS_KEY)) || []);
+         }
+         
+         function saveKnownSids(sids) {
+             localStorage.setItem(KNOWN_SIDS_KEY, JSON.stringify([...sids]));
+         }
+         
+         function updateMessagesDOM(messages) {
+              const messagesDiv = document.getElementById("messages");
+             messagesDiv.innerHTML = "";
+         
+             const confirmedSids = new Set(JSON.parse(localStorage.getItem("confirmedMessageSids") || "[]"));
+         
+             messages.forEach(msg => {
+                 if (deletedMessages.has(msg.sid)) return;
+                 if (confirmedSids.has(msg.sid)) return;  // Пропускаємо підтверджені таски
+         
+                 const messageElement = document.createElement("div");
+                 messageElement.className = "message";
+                 messageElement.setAttribute('data-sid', msg.sid);
+         
+         
+         
+                 let aiContent = msg.ai_task && Object.keys(msg.ai_task).length > 0
+                     ? "<ul>" + Object.entries(msg.ai_task).map(([key, value]) =>
+                         `<li><strong>${key}:</strong> ${value || 'Not specified'}</li>`).join('') + "</ul>"
+                     : "<p>No task data available.</p>";
+         
+                 const sender = document.createElement("strong");
+                 sender.textContent = msg.from;
+         
+                 const content = document.createElement("div");
+                 content.innerHTML = aiContent;
+         
+                 const date = document.createElement("em");
+                 date.textContent = `(${msg.date})`;
+         
+                 messageElement.appendChild(sender);
+                 messageElement.appendChild(content);
+                 messageElement.appendChild(date);
+         
+                 // Confirm button
+                 const confirmButton = document.createElement("button");
+                 confirmButton.textContent = "Confirm";
+         
+         confirmButton.onclick = function() {
+             if (confirmButton.disabled) {
+                 alert("First you have to save changes (click save button)");
+                 return;
+             }
+             // Отримуємо масив повних підтверджених повідомлень
+             let confirmedMessages = JSON.parse(localStorage.getItem("confirmedMessages") || "[]");
+             if (!confirmedMessages.find(m => m.sid === msg.sid)) {
+                 confirmedMessages.push(msg);
+                 localStorage.setItem("confirmedMessages", JSON.stringify(confirmedMessages));
+             }
+         
+             // Отримуємо масив sid підтверджених повідомлень
+             let confirmedSids = JSON.parse(localStorage.getItem("confirmedMessageSids") || "[]");
+             if (!confirmedSids.includes(msg.sid)) {
+                 confirmedSids.push(msg.sid);
+                 localStorage.setItem("confirmedMessageSids", JSON.stringify(confirmedSids));
+             }
+         
+             alert("Task confirmed and saved!");
+             messageElement.remove();
+         };
+         
+         
+                 // Delete button
+                 const deleteButton = document.createElement("button");
+                 deleteButton.className = "delete-button";
+                 deleteButton.textContent = "Delete";
+         
+         
+         
+                                    // Edit button
+                     const editButton = document.createElement("button");
+                     editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+         
+                     editButton.onclick = function () {
+                         content.innerHTML = "";  // Clear old content
+                         Object.entries(msg.ai_task).forEach(([key, value]) => {
+                             const label = document.createElement("label");
+                             label.textContent = key;
+                     
+                             const input = document.createElement("input");
+                             const keyLower = key.toLowerCase();
+                     
+                             if (keyLower.includes("date")) {
+                                 input.type = "date";
+                     
+                                 // Convert from DD.MM.YY to YYYY-MM-DD for input value
+                                 if (value && /^\d{2}\.\d{2}\.\d{2}$/.test(value)) {
+                                     const [d, m, y] = value.split(".");
+                                     input.value = `20${y}-${m}-${d}`;
+                                 } else {
+                                     input.value = "";
+                                 }
+                             } else if (keyLower.includes("time")) {
+                                 input.type = "time";
+                     
+                                 // Ensure value is in HH:MM format (you may want to normalize it)
+                                 input.value = value && /^\d{2}:\d{2}$/.test(value) ? value : "";
+                             } else {
+                                 input.type = "text";
+                                 input.value = value || "";
+                             }
+                     
+                             input.name = key;
+                             input.className = "edit-input";
+                     
+                             content.appendChild(label);
+                             content.appendChild(input);
+                             content.appendChild(document.createElement("br"));
+                         });
+                     
+                         editButton.style.display = "none";
+                         saveButton.style.display = "inline-block";
+                         confirmButton.disabled = true;
+                     };
+         
+         
+         
+                     // Save button
+                     const saveButton = document.createElement("button");
+                     saveButton.innerHTML = '<i class="fas fa-save"></i> Save';
+                     saveButton.style.display = "none";
+         
+                     saveButton.onclick = function () {
+                     const updatedTask = {};
+                     const inputs = content.querySelectorAll(".edit-input");
+                     inputs.forEach(input => {
+                         const key = input.name.toLowerCase();
+                         let value = input.value;
+         
+                         if (input.type === "date" && value) {
+                             // Перетворюємо з YYYY-MM-DD → DD.MM.YY
+                             const [y, m, d] = value.split("-");
+                             value = `${d}.${m}.${y.slice(2)}`;
+                         }
+         
+                         updatedTask[input.name] = value;
+                     });
+         
+                     fetch(`/update_task/${msg.sid}`, {
+                         method: "POST",
+                         headers: {
+                             "Content-Type": "application/json"
+                         },
+                         body: JSON.stringify(updatedTask)
+                     })
+                         .then(res => {
+                             if (res.ok) {
+                                 alert("Task updated successfully!");
+                                 saveButton.style.display = "none";
+                                 editButton.style.display = "inline-block";
+         
+                                 // 💡 ОНОВЛЮЄМО СТАН В ОБ'ЄКТІ
+                                 msg.ai_task = updatedTask;
+         
+                                 // Перегенеруємо HTML
+                                 content.innerHTML = "<ul>" + Object.entries(updatedTask).map(
+                                     ([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`
+                                 ).join('') + "</ul>";
+                                 confirmButton.disabled = false;
+                             } else {
+                                 alert("Failed to update task.");
+                             }
+                         });
+                     };
+         
+         
+                 messageElement.appendChild(editButton);
+                 messageElement.appendChild(saveButton);
+         
+                 messageElement.appendChild(confirmButton);
+                 messageElement.appendChild(deleteButton);
+                 messagesDiv.appendChild(messageElement);
+             });
+         }
+         
+         function checkNewMessages() {
+             REFRESH_BTN.disabled = true;
+             STATUS.innerText = "Checking for new messages...";
+             showLoader()
+         
+             fetch("/get_messages?cache_buster=" + Date.now())
+                 .then(res => res.json())
+                 .then(data => {
+                     if (!data.messages || data.error) {
+                         STATUS.innerText = data.error || "Failed to retrieve new messages.";
+                         return;
+                     }
+         
+                     const knownSids = getKnownSids();
+                     const currentSids = new Set(data.messages.map(msg => msg.sid));
+         
+                     // Нові повідомлення — тих sid, яких немає серед відомих
+                     const newSids = [...currentSids].filter(sid => !knownSids.has(sid));
+         
+                     if (newSids.length > 0) {
+                         STATUS.innerText = `New messages added: ${newSids.length}`;
+                     } else {
+                         STATUS.innerText = "No new messages.";
+                     }
+         
+                     updateMessagesDOM(data.messages);
+         
+                     // Після оновлення зберігаємо всі sid як "відомі", щоб при наступній перевірці рахувати тільки дійсно нові
+                     saveKnownSids(currentSids);
+                 })
+                 .catch(err => {
+                     STATUS.innerText = "Помилка при отриманні повідомлень.";
+                     console.error(err);
+                 })
+                 .finally(() => {
+                     REFRESH_BTN.disabled = false;
+                     hideLoader();
+                 });
+         }
+         
+         REFRESH_BTN.addEventListener("click", checkNewMessages);
+         
+         
+      </script>
+      <script>
+         let deletedMessages = new Set(JSON.parse(localStorage.getItem("deletedMessages")) || []);
+         
+         // function fetchMessages() {
+         //     fetch("/get_messages")
+         //         .then(response => response.json())
+         //         .then(data => {
+         //             const messagesDiv = document.getElementById("messages");
+         //             messagesDiv.innerHTML = "";
+         
+         //             if (!data.messages || data.error) {
+         //                 messagesDiv.innerHTML = `<p class="error-message">Error: ${data.error || "No messages found."}</p>`;
+         //                 return;
+         //             }
+         
+         //             data.messages.forEach(msg => {
+         //                 console.log('Message:', msg);   // <-- тут дивимось всі повідомлення
+         //                 if (deletedMessages.has(msg.sid)) {
+         //                     return;  // Skip deleted messages
+         //                 }
+         
+         //                 const messageElement = document.createElement("div");
+         //                 messageElement.className = "message";
+         //                 messageElement.setAttribute('data-sid', msg.sid); // <- Додає sid як data-атрибут
+         
+         
+         //                 let aiContent = msg.ai_task && Object.keys(msg.ai_task).length > 0
+         //                     ? "<ul>" + Object.entries(msg.ai_task).map(([key, value]) =>
+         //                         `<li><strong>${key}:</strong> ${value || 'Not specified'}</li>`).join('') + "</ul>"
+         //                     : "<p>No task data available.</p>";
+         
+         //                 const sender = document.createElement("strong");
+         // sender.textContent = msg.from;
+         
+         // const content = document.createElement("div");
+         // content.innerHTML = aiContent; // Тут уже можна використовувати innerHTML
+         
+         // const date = document.createElement("em");
+         // date.textContent = `(${msg.date})`;
+         
+         // messageElement.appendChild(sender);
+         // messageElement.appendChild(content);
+         // messageElement.appendChild(date);
+         
+         
+         //                 // Confirm button
+         //                 const confirmButton = document.createElement("button");
+         //                 confirmButton.textContent = "My confirmed events";
+         //                 confirmButton.onclick = function() {
+         //                     alert("Task confirmed!");
+         //                 };
+         
+         //                 confirmButton.onclick = function() {
+         //                 if (confirmButton.disabled) {
+         //                     alert("First you have to save changes (click save button)");
+         //                     return;
+         //                 }
+         //                 const confirmed = JSON.parse(localStorage.getItem("confirmedMessages") || "[]");
+         //                 confirmed.push(msg);
+         //                 localStorage.setItem("confirmedMessages", JSON.stringify(confirmed));
+         //                 alert("Task confirmed and saved!");
+         //             };
+         
+         
+         
+         //                 // Delete button
+         //                 const deleteButton = document.createElement("button");
+         //                 deleteButton.className = "delete-button";
+         //                 deleteButton.textContent = "Delete";
+         
+         
+         //                 messageElement.appendChild(confirmButton);
+         //                 messageElement.appendChild(deleteButton);
+         
+         
+         
+         
+         //         // Edit button
+         //         const editButton = document.createElement("button");
+         //         editButton.textContent = "Edit";
+         
+         //         editButton.onclick = function () {
+         //             content.innerHTML = "";  
+         //             Object.entries(msg.ai_task).forEach(([key, value]) => {
+         //                 const label = document.createElement("label");
+         //                 label.textContent = key;
+         //                 const input = document.createElement("input");
+         //                 input.type = "text";
+         //                 input.name = key;
+         //                 input.value = value || "";
+         //                 input.className = "edit-input";
+         //                 content.appendChild(label);
+         //                 content.appendChild(input);
+         //                 content.appendChild(document.createElement("br"));
+         //             });
+         
+         //             editButton.style.display = "none";
+         //             saveButton.style.display = "inline-block";
+         //         };
+         
+         //         // Save button
+         //         const saveButton = document.createElement("button");
+         //         saveButton.textContent = "Save";
+         //         saveButton.style.display = "none";
+         
+         //         saveButton.onclick = function () {
+         //             const updatedTask = {};
+         //             const inputs = content.querySelectorAll(".edit-input");
+         //             inputs.forEach(input => {
+         //                 updatedTask[input.name] = input.value;
+         //             });
+         
+         //             fetch(`/update_task/${msg.sid}`, {
+         //                 method: "POST",
+         //                 headers: {
+         //                     "Content-Type": "application/json"
+         //                 },
+         //                 body: JSON.stringify(updatedTask)
+         //             })
+         //                 .then(res => {
+         //                     if (res.ok) {
+         //                         alert("Task updated successfully!");
+         //                         saveButton.style.display = "none";
+         //                         editButton.style.display = "inline-block";
+         
+         //                         content.innerHTML = "<ul>" + Object.entries(updatedTask).map(
+         //                             ([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`
+         //                         ).join('') + "</ul>";
+         //                     } else {
+         //                         alert("Failed to update task.");
+         //                     }
+         //                 });
+         //         };
+         
+         //         messageElement.appendChild(editButton);
+         //         messageElement.appendChild(saveButton);
+         //                 messagesDiv.appendChild(messageElement);
+         //             });
+         //         })
+         //         .catch(error => console.error('Error fetching messages:', error));
+         // }
+         
+         
+         window.onload = () => {
+         fetch("/get_messages")
+             .then(res => res.json())
+             .then(data => {
+                 if (data.messages) {
+                     updateMessagesDOM(data.messages);
+                     const allSids = new Set(data.messages.map(m => m.sid));
+                     saveKnownSids(allSids);
+                 }
+             })
+             .catch(console.error);
+         
+         document.getElementById('messages').addEventListener('click', (event) => {
+           document.querySelectorAll('.message').forEach(el => console.log(el.getAttribute('data-sid')));
+         if (event.target.classList.contains('delete-button')) {
+           console.log('Delete button clicked!');
+           const messageDiv = event.target.closest('.message');
+           const messageSid = messageDiv.getAttribute('data-sid');
+           if (messageSid) {
+             fetch(`/delete_message/${messageSid}`, { method: 'DELETE' })
+               .then(response => {
+                 if (response.ok) {
+                   deletedMessages.add(messageSid);
+                   localStorage.setItem("deletedMessages", JSON.stringify([...deletedMessages]));
+                   messageDiv.remove();
+                   console.log('Message deleted successfully');
+                 } else {
+                   return response.json();
+                 }
+               })
+               .then(errorData => {
+                 if (errorData && errorData.error) {
+                   console.error('Error deleting message:', errorData.error);
+                 }
+               })
+               .catch(error => {
+                 console.error('Error deleting message:', error);
+               });
+           }
+         }
+         });
+         }
+         
+         function showLoader() {
+         const loader = document.querySelector('.loader');
+         if (loader) loader.style.display = 'block';
+         }
+         
+         function hideLoader() {
+         const loader = document.querySelector('.loader');
+         if (loader) loader.style.display = 'none';
+         }
+         
+      </script>
+   </head>
+   <body>
+      <div style="position: absolute; top: 20px; right: 20px;">
+         <a href="{{ url_for('home.confirmed') }}" class="confirmed-button">Confirmed</a>
+      </div>
+      <div class="container">
+         <header>
             <h1>Hello, {{ username }}!</h1>
             <h2>Your messages:</h2>
-        </header>
-
-        <div id="messages">
+         </header>
+         <div id="messages">
             <div class="loader"></div>
-        </div>
-
-        <footer>
+         </div>
+         <footer>
             <a href="{{ url_for('auth.logout') }}" class="logout-button">Logout</a>
-        </footer>
-    </div>
-</body>
+         </footer>
+      </div>
+   </body>
 </html>
