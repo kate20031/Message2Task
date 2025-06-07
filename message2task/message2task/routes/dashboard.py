@@ -8,7 +8,8 @@ dashboard_bp = Blueprint('dashboard', __name__)
 def dashboard():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
+
 
     messages = Message.query.filter_by(user_id=session['user_id']).order_by(Message.date.desc()).limit(10).all()
 
