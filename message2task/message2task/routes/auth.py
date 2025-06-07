@@ -46,8 +46,7 @@ def login():
             session['user'] = user.username
             session['user_id'] = user.id
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard.dashboard'))  # Assuming /dashboard route is in dashboard_bp
-            # return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard.dashboard'))
         else:
             flash('Invalid credentials.', 'danger')
 
