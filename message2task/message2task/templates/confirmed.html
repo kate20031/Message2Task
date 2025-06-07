@@ -42,7 +42,7 @@ function parseDateAndTime(msg) {
 
     const [hours, minutes] = rawTime.split(':');
 
-    // Створюємо локальний час (без UTC)
+    // Creating of local time
     const dateObj = new Date(fullYear, parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
 
     if (isNaN(dateObj.getTime())) {
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 година
+            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hour
 
             const start = formatForCalendar(startDate);
             const end = formatForCalendar(endDate);
