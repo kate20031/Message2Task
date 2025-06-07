@@ -29,7 +29,8 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful! Please log in.', 'success')
-            return redirect(url_for('login'))
+            # return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
     return render_template('register.html')
 
@@ -45,7 +46,8 @@ def login():
             session['user'] = user.username
             session['user_id'] = user.id
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard.dashboard'))  # Assuming /dashboard route is in dashboard_bp
+            # return redirect(url_for('dashboard'))
         else:
             flash('Invalid credentials.', 'danger')
 
@@ -57,4 +59,5 @@ def logout():
     session.pop('user', None)
     session.pop('tasks', None)  # Clear tasks when logging out
     flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
+    # return redirect(url_for('login'))
