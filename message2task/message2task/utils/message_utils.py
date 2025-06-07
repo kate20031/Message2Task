@@ -1,4 +1,5 @@
-from models import Message, db
+from ..models import Message, db
+
 
 def delete_from_db(message_sid):
     message = Message.query.filter_by(sid=message_sid).first()
