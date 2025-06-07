@@ -10,7 +10,6 @@ def register():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Нові поля
         twilio_sid = request.form.get('twilio_sid')
         twilio_token = request.form.get('twilio_token')
         twilio_number = request.form.get('twilio_number')
@@ -29,7 +28,6 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful! Please log in.', 'success')
-            # return redirect(url_for('login'))
             return redirect(url_for('auth.login'))
 
     return render_template('register.html')
@@ -56,7 +54,7 @@ def login():
 @auth_bp.route("/logout")
 def logout():
     session.pop('user', None)
-    session.pop('tasks', None)  # Clear tasks when logging out
+    session.pop('tasks', None)  
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
-    # return redirect(url_for('login'))
+
