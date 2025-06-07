@@ -58,7 +58,7 @@ flutter run
 
 - Open the app and view your messages dashboard.
 - New messages automatically convert into tasks with parsed details.
-- Confirm tasks once reviewed or edit details like date/time manually.
+- Confirm tasks once reviewed or edit details like (for example) date/time manually.
 - Delete tasks you no longer need.
 - Visit the “Confirmed” page to see your saved tasks anytime.
 
