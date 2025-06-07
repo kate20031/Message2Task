@@ -76,4 +76,14 @@ def create_app():
     print(app.url_map) 
 
 
+    
+    logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+    
+        @app.errorhandler(500)
+        def internal_error(error):
+            logger.error(f"500 error: {error}", exc_info=True)
+            return "Internal Server Error", 500
+
+
     return app
