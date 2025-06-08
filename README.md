@@ -15,7 +15,7 @@
 ## ⚙️ Features
 
 * 📩 **Real-time message reception**
-* 🤖 **AI-based message parsing** into formatted tasks
+* 🤖 **AI-based message parsing** into formatted tasks powered by **Google Gemini API**
 * ✅ One-click task confirmation
 * ✏️ Edit task date, time, and details
 * 🗑️ Delete unnecessary tasks
@@ -122,7 +122,8 @@ Message2Task/
 * Python 3.7+
 * pip
 * Git
-
+* WhatsApp account (connected to Twilio Sandbox)
+* Google Gemini API key (for AI-based message extraction)
 ---
 
 ## 🤝 Contribution
