@@ -78,20 +78,38 @@ python app.py
 
 ```
 Message2Task/
-├── app.py                # Main Flask application
-├── templates/            # HTML templates (Jinja2)
-│   ├── dashboard.html
-│   ├── login.html
-│   ├── register.html
-│   └── confirmed.html
-├── static/css/           # Frontend styles
-│   └── style.css
-├── routes/               # API routes
-├── utils/                # Utility helpers
-├── models.py             # Database models
-├── ai_task_extractor.py  # Parsing messages into tasks
-├── strategy_*.py         # AI processing strategies
-└── requirements.txt      # Python dependencies
+└── message2task/
+    └── message2task/
+        ├── app.py
+        ├── __init__.py
+        ├── extractor_context.py
+        ├── ai_task_extractor.py
+        ├── models.py
+        ├── strategy_dummy.py
+        ├── strategy_gemini.py
+        ├── strategy_interface.py
+        ├── .env
+        ├── migrations/
+        ├── templates/
+        │   ├── confirmed.html
+        │   ├── dashboard.html
+        │   ├── home.html
+        │   ├── login.html
+        │   └── register.html
+        ├── static/css/
+        │   └── style.css
+        ├── routes/
+        │   ├── __init__.py
+        │   ├── auth.py
+        │   ├── dashboard.py
+        │   ├── home.py
+        │   └── messages.py
+        ├── utils/
+        │   ├── __init__.py
+        │   ├── ai_task_helper.py
+        │   ├── message_utils.py
+        │   └── time_utils.py
+
 ```
 
 ---
