@@ -63,14 +63,17 @@ python app.py
 ---
 
 ## 🧪 How to Use
-
-1. Go to the main page of the app
-2. Log in or register
-3. On the Dashboard, you'll see messages converted into tasks
-4. If needed — click **Edit** to modify (e.g., date or time)
-5. After editing, click **Save**, then **Confirm**
-6. To delete a task — click **Delete**
-7. To view saved tasks, click **Confirmed**
+1. Connect WhatsApp to Twilio Sandbox (Required step!):
+Send a message from your WhatsApp device to +1 415 523 8886.
+In the message, type: join dark-forgot.
+This links your WhatsApp number to the Twilio Sandbox used by Message2Task.
+2. Go to the main page of the app
+3. Log in or register
+4. On the Dashboard, you'll see messages converted into tasks
+5. If needed — click **Edit** to modify (e.g., date or time)
+6. After editing, click **Save**, then **Confirm**
+7. To delete a task — click **Delete**
+8. To view saved tasks, click **Confirmed**
 
 ---
 
