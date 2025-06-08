@@ -44,7 +44,7 @@
                               "</ul>"
                             : "<p>No task data available.</p>";
 
-                    const sender = document.createElement("strong");
+                    // const sender = document.createElement("strong");
                     sender.textContent = msg.from;
 
                     const content = document.createElement("div");
@@ -53,7 +53,7 @@
                     const date = document.createElement("em");
                     date.textContent = `(${msg.date})`;
 
-                    messageElement.appendChild(sender);
+                    // messageElement.appendChild(sender);
                     messageElement.appendChild(content);
                     messageElement.appendChild(date);
 
