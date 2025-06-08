@@ -31,6 +31,23 @@
 
 ---
 
+📸 Screenshots
+
+### Registration Form
+![Registration Form](images/registration_form.png)
+
+### Dashboard View
+![Dashboard View](images/dashboard_view.png)
+
+### Edit Option on Dashboard
+![Edit Option](images/edit_option.png)
+
+### Confirmation Screen
+![Confirmation Screen](images/confirmation_screen.png)
+
+
+---
+
 ## 🛠️ Installation & Run
 
 ### 1. Clone the repository
