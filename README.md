@@ -1,50 +1,37 @@
-# message2task 🚀
+# Message2Task 🚀
 
-**Turn your messages into actionable tasks — effortlessly.**
+**Turn messages into tasks — simple, fast, automatic.**
 
-[Try the live app now!](https://message2task.onrender.com) 🌐
-
----
-
-## What is message2task?
-
-message2task is a sleek Flutter-powered application designed to help you **extract tasks from your messages** and manage them seamlessly. Whether it’s work reminders, event invites, or simple to-dos, message2task transforms your incoming messages into clear, organized tasks — so you never miss a beat.
+[👉 Try it online](https://message2task.onrender.com)
 
 ---
 
-## Features
+## 🔍 What is it?
 
-- **Automatic task extraction** from messages with AI-powered parsing  
-- **Easy task confirmation, editing, and deletion** with a simple interface  
-- Persistent task management with **local storage** support  
-- Real-time message fetching and updates  
-- User-friendly interface with options to manually adjust task details  
-- Access your confirmed tasks anytime via the dedicated page
+**Message2Task** is a web application built with Flask (Python) that automatically extracts tasks from messages and allows you to manage them through an intuitive interface. You can edit, confirm, or delete tasks right in your browser.
 
 ---
 
-## Live Demo
+## ⚙️ Features
 
-Check out the app live on [message2task.onrender.com](https://message2task.onrender.com) — no installation needed!
+* 📩 **Real-time message reception**
+* 🤖 **AI-based message parsing** into formatted tasks
+* ✅ One-click task confirmation
+* ✏️ Edit task date, time, and details
+* 🗑️ Delete unnecessary tasks
+* 💾 Local saving of confirmed tasks (via LocalStorage)
+* 🔄 Manual "Refresh" button
+* 👀 "Confirmed" page to view saved tasks
+
+---
+
+## 🌐 Live Demo
+
+[🔗 https://message2task.onrender.com](https://message2task.onrender.com)
 
 ---
 
-## Getting Started
-
-Want to run the app locally or contribute? Here’s how:
-
-
-## Installation
-
-Follow these steps to set up and run the **Message2Task** project locally. This project includes a Python Flask backend and a Flutter frontend.
-
-### Prerequisites
-
-- Python 3.7+ installed
-- Flutter SDK installed ([Flutter installation guide](https://flutter.dev/docs/get-started/install))
-- Git installed
-
----
+## 🛠️ Installation & Run
 
 ### 1. Clone the repository
 
@@ -53,46 +40,84 @@ git clone https://github.com/kate20031/Message2Task.git
 cd Message2Task
 ```
 
-### 2. Setup and run the backend (Python Flask)
+### 2. Backend setup & run (Flask)
 
-It's recommended to use a virtual environment:
+It is recommended to use a virtual environment:
 
-```
+```bash
 python3 -m venv venv
-source venv/bin/activate        # On Windows use: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
-Set environment variables if necessary (check `.env` file).
 
-Start the Flask backend server:
+Check the `.env` file and set environment variables as needed.
+
+Run the Flask server:
 
 ```bash
 python app.py
 ```
 
-By default, the backend will run on [http://localhost:5000](http://localhost:5000).
+📍 By default, the server runs at: [http://localhost:5000](http://localhost:5000)
 
+---
 
+## 🧪 How to Use
 
+1. Go to the main page of the app
+2. Log in or register
+3. On the Dashboard, you'll see messages converted into tasks
+4. If needed — click **Edit** to modify (e.g., date or time)
+5. After editing, click **Save**, then **Confirm**
+6. To delete a task — click **Delete**
+7. To view saved tasks, click **Confirmed**
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Flutter](https://img.shields.io/badge/Flutter-3.10.0-blue)](https://flutter.dev)
-[![GitHub issues](https://img.shields.io/github/issues/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/issues)
-[![GitHub stars](https://img.shields.io/github/stars/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/kate20031/Message2Task)](https://github.com/kate20031/Message2Task/network/members)
+---
 
-## How to Use
+## 🧹 Project Structure
 
-- Open the app and view your messages dashboard.
-- New messages automatically convert into tasks with parsed details.
-- Confirm tasks once reviewed or edit details like (for example) date/time manually.
-- Delete tasks you no longer need.
-- Visit the “Confirmed” page to see your saved tasks anytime.
+```
+Message2Task/
+├── app.py                # Main Flask application
+├── templates/            # HTML templates (Jinja2)
+│   ├── dashboard.html
+│   ├── login.html
+│   ├── register.html
+│   └── confirmed.html
+├── static/css/           # Frontend styles
+│   └── style.css
+├── routes/               # API routes
+├── utils/                # Utility helpers
+├── models.py             # Database models
+├── ai_task_extractor.py  # Parsing messages into tasks
+├── strategy_*.py         # AI processing strategies
+└── requirements.txt      # Python dependencies
+```
 
-## Contributing
+---
 
-Contributions and feedback are welcome! Feel free to open issues or submit pull requests.
+## 🤠 Prerequisites
 
-## License
+* Python 3.7+
+* pip
+* Git
 
-This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+---
+
+## 🤝 Contribution
+
+Pull Requests, Issues, and feedback are welcome!
+Want to add a new feature or found a bug? — You’re welcome 👇
+
+👉 [GitHub Issues](https://github.com/kate20031/Message2Task/issues)
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache-2.0** license.
+See the `LICENSE` file for details.
+
+---
+
+💡 Made with ❤️ by [@kate20031](https://github.com/kate20031)
